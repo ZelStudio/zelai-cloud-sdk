@@ -1,6 +1,6 @@
 {
-  "name": "zelai-sdk",
-  "version": "1.4.0",
+  "name": "zelai-cloud-sdk",
+  "version": "1.5.1",
   "description": "Official ZelAI SDK - Multimodal AI for autonomous image/video generation, vision analysis and agentic LLM workflows",
   "keywords": [
     "zelai",
@@ -16,6 +16,14 @@
   ],
   "author": "ZelStudio",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ZelStudio/zelai-cloud-sdk.git"
+  },
+  "homepage": "https://github.com/ZelStudio/zelai-cloud-sdk#readme",
+  "bugs": {
+    "url": "https://github.com/ZelStudio/zelai-cloud-sdk/issues"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -40,6 +48,7 @@
     "@types/mocha": "^10.0.10",
     "@types/node": "~22.1.0",
     "@types/ws": "^8.18.1",
+    "image-size": "^2.0.2",
     "jest": "^29.7.0",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",

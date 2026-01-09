@@ -5,6 +5,40 @@ All notable changes to the ZelAI SDK will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.1] - 2026-01-09
+
+### Documentation
+- **Rate Limit Clarification** - Improved documentation for rate limits
+  - Clarified that Image/Video/LLM use concurrent operation limits (max simultaneous operations)
+  - Clarified that CDN uses traditional rate-based limits (requests per 15-minute window)
+  - Added "Understanding Rate Limits" section to README with explanatory table
+  - Updated code examples to use clearer terminology (active/available vs used)
+  - Added JSDoc comments to TypeScript types explaining the difference
+
+## [1.5.0] - 2026-01-07
+
+### Added
+- **CDN Download Method** - New `downloadFromCDN()` method for downloading images and videos
+  - Downloads content with automatic Bearer token authentication
+  - Supports format conversion (jpg, png, gif, mp4)
+  - Supports resize with `width` and `height` options
+  - Supports watermarking with `watermark` and `watermarkPosition` options
+  - Supports video frame extraction with `seek` option (milliseconds)
+  - Returns `{ buffer, mimeType, size }`
+- New types: `CDNDownloadOptions`, `CDNDownloadResult`
+
+### Changed
+- Updated CDN documentation to clarify that CDN URLs require Bearer token authentication
+- Added "Downloading Content" section with `downloadFromCDN()` examples
+- Renamed "Downloading Files" to "Manual Download with Axios" for manual axios usage
+
+## [1.4.2] - 2026-01-06
+
+### Changed
+- Set up GitHub Actions for automated npm publishing with provenance
+- Updated npm package links and badges in README
+- Removed rate limits section from documentation
+
 ## [1.4.0] - 2025-12-22
 
 ### Added
@@ -142,7 +176,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2024-01-15
 
 ### Added
-- Initial public release of zelai-sdk
+- Initial public release of zelai-cloud-sdk
 - Text-to-image generation with 12 style presets
 - Image-to-image editing with strength control
 - Image-to-video generation

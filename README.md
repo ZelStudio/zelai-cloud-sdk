@@ -1,12 +1,14 @@
-# zelai-sdk
+# zelai-cloud-sdk
 
-Official TypeScript/JavaScript SDK for ZelAI AI Generation API
+Official TypeScript/JavaScript SDK for ZelStudio.com Cloud AI Generation API
 
 Generate images, videos, and text using state-of-the-art AI models through a simple and intuitive API.
 
-[![Version](https://img.shields.io/badge/version-1.4.0-blue)](.)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue)](.)
-[![Node](https://img.shields.io/badge/node-%3E%3D18.0.0-green)](.)
+[![npm version](https://img.shields.io/npm/v/zelai-cloud-sdk.svg)](https://www.npmjs.com/package/zelai-cloud-sdk)
+[![npm downloads](https://img.shields.io/npm/dm/zelai-cloud-sdk.svg)](https://www.npmjs.com/package/zelai-cloud-sdk)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue)](https://www.typescriptlang.org/)
+[![Node](https://img.shields.io/badge/node-%3E%3D18.0.0-green)](https://nodejs.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ---
 
@@ -15,6 +17,7 @@ Generate images, videos, and text using state-of-the-art AI models through a sim
 - [Features](#features)
 - [What's New](#whats-new)
 - [Installation](#installation)
+- [Getting an API Key](#getting-an-api-key)
 - [Quick Start](#quick-start)
 - [Documentation](#documentation)
   - [Initialization](#initialization)
@@ -31,7 +34,6 @@ Generate images, videos, and text using state-of-the-art AI models through a sim
 - [API Reference](#api-reference)
 - [Best Practices](#best-practices)
 - [Troubleshooting](#troubleshooting)
-- [Migration Guide](#migration-guide)
 
 ---
 
@@ -57,7 +59,21 @@ Generate images, videos, and text using state-of-the-art AI models through a sim
 
 ## What's New
 
-### v1.4.0 (Latest)
+### v1.5.1 (Latest)
+
+- **Rate Limit Documentation** - Clarified that Image/Video/LLM use concurrent operation limits while CDN uses rate-based limits
+
+### v1.5.0
+
+- **CDN Download Method** - New `downloadFromCDN()` method for downloading images and videos with automatic authentication
+- **CDN Auth Documentation** - Updated documentation to clarify that CDN URLs require Bearer token authentication
+
+### v1.4.2
+
+- **npm Publishing** - Set up GitHub Actions for automated npm publishing with provenance
+- **Documentation** - Updated package links and badges
+
+### v1.4.0
 
 - **AI Image Upscale** - New upscale methods for AI-powered image upscaling
   - `upscaleImage()` - REST API upscaling with factor 2-4x
@@ -125,21 +141,36 @@ Generate images, videos, and text using state-of-the-art AI models through a sim
 ## Installation
 
 ```bash
-npm install zelai-sdk
+npm install zelai-cloud-sdk
 ```
 
 or
 
 ```bash
-yarn add zelai-sdk
+yarn add zelai-cloud-sdk
 ```
+
+---
+
+## Getting an API Key
+
+To use this SDK, you need an API key.
+
+**Request Access:**
+1. Fill out the [API Access Request Form](https://YOUR_ZELAI_FORM_LINK)
+2. We'll review your request within 24-48 hours
+3. Once approved, you'll receive your API key via email
+
+**Contact:**
+- LinkedIn: [ZelStudio](https://www.linkedin.com/company/zel-studio-inc)
+
 
 ---
 
 ## Quick Start
 
 ```typescript
-import { createClient, STYLES, FORMATS } from 'zelai-sdk';
+import { createClient, STYLES, FORMATS } from 'zelai-cloud-sdk';
 
 // Initialize the client
 const client = createClient('zelai_pk_your_api_key_here');
@@ -151,9 +182,7 @@ const image = await client.generateImage({
   format: FORMATS.landscape.id
 });
 
-// Construct CDN URL from image ID
-const imageUrl = `https://apiv2.zelstudio.com:800/api/v1/cdn/${image.imageId}.jpg`;
-console.log(`Image URL: ${imageUrl}`);
+console.log(`Generated image ID: ${image.imageId}`);
 
 // Or use WebSocket for real-time generation
 await client.wsConnect();
@@ -173,12 +202,11 @@ await client.close();
 ### Initialization
 
 ```typescript
-import { createClient } from 'zelai-sdk';
+import { createClient } from 'zelai-cloud-sdk';
 
 const client = createClient('zelai_pk_your_api_key_here', {
-  baseUrl: 'https://apiv2.zelstudio.com:800',  // Optional, defaults to production
-  timeout: 300000,                        // Optional, 5 minutes default
-  debug: false                            // Optional, enable debug logging
+  timeout: 300000,  // Optional, 5 minutes default
+  debug: false      // Optional, enable debug logging
 });
 ```
 
@@ -187,7 +215,7 @@ const client = createClient('zelai_pk_your_api_key_here', {
 #### Generate from Text Prompt
 
 ```typescript
-import { STYLES, FORMATS } from 'zelai-sdk';
+import { STYLES, FORMATS } from 'zelai-cloud-sdk';
 
 const result = await client.generateImage({
   prompt: 'a cyberpunk cityscape at night with neon lights',
@@ -205,16 +233,12 @@ console.log(result);
 //   height: 768,
 //   seed: 12345
 // }
-
-// Construct CDN URL from imageId
-const imageUrl = `https://apiv2.zelstudio.com:800/api/v1/cdn/${result.imageId}.jpg`;
-console.log(`Access image at: ${imageUrl}`);
 ```
 
 #### Available Styles
 
 ```typescript
-import { STYLES } from 'zelai-sdk';
+import { STYLES } from 'zelai-cloud-sdk';
 
 STYLES.raw         // Raw Gen6 defaults
 STYLES.realistic   // Realistic ZelAI generation
@@ -233,7 +257,7 @@ STYLES.paint       // Gen6 Paint
 #### Available Formats
 
 ```typescript
-import { FORMATS } from 'zelai-sdk';
+import { FORMATS } from 'zelai-cloud-sdk';
 
 FORMATS.portrait    // 9:16 vertical (768x1344)
 FORMATS.landscape   // 16:9 horizontal (1344x768)
@@ -301,7 +325,7 @@ When resizing images to different dimensions, the `resizePad` option controls ho
 AI-powered image upscaling. No user prompt needed.
 
 ```typescript
-import { UPSCALE_FACTOR } from 'zelai-sdk';
+import { UPSCALE_FACTOR } from 'zelai-cloud-sdk';
 
 // Upscale an image (REST API)
 const upscaled = await client.upscaleImage('550e8400-e29b-41d4-a716-446655440000', {
@@ -330,7 +354,7 @@ await client.close();
 #### Upscale Factor Limits
 
 ```typescript
-import { UPSCALE_FACTOR } from 'zelai-sdk';
+import { UPSCALE_FACTOR } from 'zelai-cloud-sdk';
 
 UPSCALE_FACTOR.MIN     // 2
 UPSCALE_FACTOR.MAX     // 4
@@ -360,10 +384,6 @@ console.log(video);
 //   duration: 5,
 //   fps: 16
 // }
-
-// Construct CDN URL from videoId
-const videoUrl = `https://apiv2.zelstudio.com:800/api/v1/cdn/${video.videoId}.mp4`;
-console.log(`Access video at: ${videoUrl}`);
 ```
 
 ### Text Generation (LLM)
@@ -451,27 +471,16 @@ The CDN supports multiple file formats and operations including format conversio
 | GIF | `.gif` | Static or animated image format |
 | MP4 | `.mp4` | Video format |
 
-#### CDN URL Construction
+#### CDN URL Pattern
 
-```typescript
-// Basic image URL
-const imageUrl = `https://apiv2.zelstudio.com:800/api/v1/cdn/${imageId}.jpg`;
-
-// Image with resize
-const resizedUrl = `https://apiv2.zelstudio.com:800/api/v1/cdn/${imageId}.jpg?w=512&h=512`;
-
-// Image with watermark
-const watermarkedUrl = `https://apiv2.zelstudio.com:800/api/v1/cdn/${imageId}.jpg?watermark=${watermarkId}&position=southeast`;
-
-// Video URL
-const videoUrl = `https://apiv2.zelstudio.com:800/api/v1/cdn/${videoId}.mp4`;
-
-// Extract first frame from video as GIF
-const gifFromVideo = `https://apiv2.zelstudio.com:800/api/v1/cdn/${videoId}.gif`;
-
-// GIF with resize
-const resizedGif = `https://apiv2.zelstudio.com:800/api/v1/cdn/${videoId}.gif?w=256&h=256`;
+For advanced use cases, the CDN URL pattern is:
 ```
+GET /api/v1/cdn/{id}.{format}?{queryParams}
+```
+
+> **Authentication Required**: CDN URLs require Bearer token authentication.
+> You cannot use these URLs directly in browsers or `<img>` tags.
+> Use `client.downloadFromCDN()` (recommended) or include the `Authorization: Bearer {apiKey}` header.
 
 #### Format Conversion Matrix
 
@@ -501,15 +510,64 @@ const resizedGif = `https://apiv2.zelstudio.com:800/api/v1/cdn/${videoId}.gif?w=
 - Sharp gravity: `northwest`, `north`, `northeast`, `west`, `center`, `east`, `southwest`, `south`, `southeast`
 - Human-readable: `top-left`, `top-center`, `top-right`, `middle-left`, `middle-center`, `middle-right`, `bottom-left`, `bottom-center`, `bottom-right`
 
-#### Downloading Files
+#### Downloading Content
+
+Use `downloadFromCDN()` to download images or videos with automatic authentication:
+
+```typescript
+import fs from 'fs';
+
+// Download image as buffer
+const { buffer, mimeType, size } = await client.downloadFromCDN(imageId);
+fs.writeFileSync('image.jpg', buffer);
+console.log(`Downloaded ${size} bytes (${mimeType})`);
+
+// Download with format conversion (PNG)
+const { buffer: pngBuffer } = await client.downloadFromCDN(imageId, { format: 'png' });
+fs.writeFileSync('image.png', pngBuffer);
+
+// Download with resize
+const { buffer: thumbBuffer } = await client.downloadFromCDN(imageId, {
+  format: 'jpg',
+  width: 256,
+  height: 256
+});
+fs.writeFileSync('thumbnail.jpg', thumbBuffer);
+
+// Download video
+const { buffer: videoBuffer } = await client.downloadFromCDN(videoId, { format: 'mp4' });
+fs.writeFileSync('video.mp4', videoBuffer);
+
+// Extract frame from video at 5 seconds
+const { buffer: frameBuffer } = await client.downloadFromCDN(videoId, {
+  format: 'jpg',
+  seek: 5000  // milliseconds
+});
+fs.writeFileSync('frame-5s.jpg', frameBuffer);
+
+// Download with watermark
+const { buffer: wmBuffer } = await client.downloadFromCDN(imageId, {
+  format: 'jpg',
+  watermark: 'watermark-cdn-id',
+  watermarkPosition: 'southeast'
+});
+fs.writeFileSync('watermarked.jpg', wmBuffer);
+```
+
+#### Manual Download with Axios
+
+For advanced use cases, you can download directly using axios with the Authorization header:
 
 ```typescript
 import axios from 'axios';
 import fs from 'fs';
 
+// Build CDN URL: baseUrl + /api/v1/cdn/{id}.{format}
+const baseUrl = 'your-api-base-url';  // Use client's baseUrl or default
+
 // Download image
 const imageResponse = await axios.get(
-  `https://apiv2.zelstudio.com:800/api/v1/cdn/${imageId}.jpg`,
+  `${baseUrl}/api/v1/cdn/${imageId}.jpg`,
   {
     responseType: 'arraybuffer',
     headers: { 'Authorization': `Bearer ${apiKey}` }
@@ -519,33 +577,13 @@ fs.writeFileSync('output.jpg', imageResponse.data);
 
 // Download video
 const videoResponse = await axios.get(
-  `https://apiv2.zelstudio.com:800/api/v1/cdn/${videoId}.mp4`,
+  `${baseUrl}/api/v1/cdn/${videoId}.mp4`,
   {
     responseType: 'arraybuffer',
     headers: { 'Authorization': `Bearer ${apiKey}` }
   }
 );
 fs.writeFileSync('output.mp4', videoResponse.data);
-
-// Extract video frame as GIF
-const gifResponse = await axios.get(
-  `https://apiv2.zelstudio.com:800/api/v1/cdn/${videoId}.gif`,
-  {
-    responseType: 'arraybuffer',
-    headers: { 'Authorization': `Bearer ${apiKey}` }
-  }
-);
-fs.writeFileSync('frame.gif', gifResponse.data);
-
-// Download with resize
-const resizedResponse = await axios.get(
-  `https://apiv2.zelstudio.com:800/api/v1/cdn/${imageId}.png?w=256&h=256`,
-  {
-    responseType: 'arraybuffer',
-    headers: { 'Authorization': `Bearer ${apiKey}` }
-  }
-);
-fs.writeFileSync('thumbnail.png', resizedResponse.data);
 ```
 
 ### Watermarking
@@ -570,11 +608,29 @@ const image = await client.generateImage({
   watermarkAsTiles: true
 });
 
-// Apply watermark via CDN URL
-const watermarkedUrl = `https://apiv2.zelstudio.com:800/api/v1/cdn/${imageId}.jpg?watermark=${watermarkId}&position=center`;
+// Apply watermark via CDN download
+const { buffer } = await client.downloadFromCDN(imageId, {
+  watermark: watermarkId,
+  watermarkPosition: 'center'
+});
 ```
 
 ### Settings & Usage Tracking
+
+#### Understanding Rate Limits
+
+Rate limits work differently depending on the operation type:
+
+| Operation | Limit Type | What `requestsPer15Min` Means |
+|-----------|------------|-------------------------------|
+| Image | Concurrent | Max simultaneous image generations |
+| Video | Concurrent | Max simultaneous video generations |
+| LLM | Concurrent | Max simultaneous text generations |
+| CDN | Rate-based | Requests per 15-minute window |
+
+**For Image/Video/LLM:** You can have up to N operations running at once. When one completes, you can start another immediately.
+
+**For CDN:** Traditional rate limiting - counter resets every 15 minutes.
 
 ```typescript
 // Get API key settings with current usage
@@ -588,23 +644,27 @@ console.log('Video:', settings.rateLimits.video);
 console.log('LLM:', settings.rateLimits.llm);
 console.log('CDN:', settings.rateLimits.cdn);
 
-// Current usage with remaining quota and reset times
+// Current usage - note: image/video/llm show concurrent operations, cdn shows rate
 console.log('\nCurrent Usage:');
-console.log('Image:', {
-  used15min: settings.currentUsage.image.current.requestsPer15Min,
-  usedDaily: settings.currentUsage.image.current.requestsPerDay,
-  remaining15min: settings.currentUsage.image.remaining.requestsPer15Min,
-  remainingDaily: settings.currentUsage.image.remaining.requestsPerDay,
-  resetAt: settings.currentUsage.image.resetAt
+console.log('Image (concurrent):', {
+  active: settings.currentUsage.image.current.requestsPer15Min,      // Currently running
+  limit: settings.rateLimits.image.requestsPer15Min,                  // Max concurrent
+  available: settings.currentUsage.image.remaining.requestsPer15Min   // Capacity left
 });
 
 // LLM usage includes token tracking
-console.log('LLM:', {
-  requests15min: settings.currentUsage.llm.current.requestsPer15Min,
-  requestsDaily: settings.currentUsage.llm.current.requestsPerDay,
-  tokens15min: settings.currentUsage.llm.current.tokensPer15Min,
-  tokensDaily: settings.currentUsage.llm.current.tokensPerDay,
-  resetAt: settings.currentUsage.llm.resetAt
+console.log('LLM (concurrent):', {
+  active: settings.currentUsage.llm.current.requestsPer15Min,
+  limit: settings.rateLimits.llm.requestsPer15Min,
+  tokensToday: settings.currentUsage.llm.current.tokensPerDay,
+  tokenLimit: settings.rateLimits.llm.tokensPerDay
+});
+
+// CDN uses traditional rate limiting
+console.log('CDN (rate-based):', {
+  used15min: settings.currentUsage.cdn.current.requestsPer15Min,
+  limit15min: settings.rateLimits.cdn.requestsPer15Min,
+  resetAt: settings.currentUsage.cdn.resetAt.window15Min
 });
 ```
 
@@ -616,11 +676,17 @@ const limits = await client.checkLimits();
 
 limits.forEach(limit => {
   console.log(`${limit.operation}:`);
-  console.log(`  Requests: ${limit.current.requestsPer15Min}/${limit.limit.requestsPer15Min} (15min)`);
-  console.log(`  Requests: ${limit.current.requestsPerDay}/${limit.limit.requestsPerDay} (daily)`);
+
+  // For image/video/llm: shows concurrent operations (active/max)
+  // For cdn: shows rate limit usage (used/limit per window)
+  console.log(`  Active: ${limit.current.requestsPer15Min}/${limit.limit.requestsPer15Min}`);
+
+  if (limit.operation === 'cdn') {
+    console.log(`  Daily: ${limit.current.requestsPerDay}/${limit.limit.requestsPerDay}`);
+  }
 
   if (limit.operation === 'llm') {
-    console.log(`  Tokens: ${limit.current.tokensPer15Min}/${limit.limit.tokensPer15Min} (15min)`);
+    console.log(`  Tokens today: ${limit.current.tokensPerDay}/${limit.limit.tokensPerDay}`);
   }
 });
 ```
@@ -666,8 +732,7 @@ const client = createClient('zelai_pk_your_api_key_here', {
 ### Example 1: Generate Image with Watermark and Download
 
 ```typescript
-import { createClient, STYLES, FORMATS } from 'zelai-sdk';
-import axios from 'axios';
+import { createClient, STYLES, FORMATS } from 'zelai-cloud-sdk';
 import fs from 'fs';
 
 const client = createClient('zelai_pk_your_api_key_here');
@@ -686,13 +751,8 @@ async function generateAndDownload() {
     console.log('Image generated:', result.imageId);
 
     // Download the image
-    const imageUrl = `https://apiv2.zelstudio.com:800/api/v1/cdn/${result.imageId}.jpg`;
-    const response = await axios.get(imageUrl, {
-      responseType: 'arraybuffer',
-      headers: { 'Authorization': `Bearer zelai_pk_your_api_key_here` }
-    });
-
-    fs.writeFileSync('generated-image.jpg', response.data);
+    const { buffer } = await client.downloadFromCDN(result.imageId);
+    fs.writeFileSync('generated-image.jpg', buffer);
     console.log('Image saved to generated-image.jpg');
 
   } catch (error) {
@@ -706,8 +766,7 @@ generateAndDownload();
 ### Example 2: Generate Video and Extract GIF Frame
 
 ```typescript
-import { createClient, STYLES, FORMATS } from 'zelai-sdk';
-import axios from 'axios';
+import { createClient, STYLES, FORMATS } from 'zelai-cloud-sdk';
 import fs from 'fs';
 
 const client = createClient('zelai_pk_your_api_key_here');
@@ -731,21 +790,13 @@ async function generateVideoAndExtractFrame() {
     console.log('Video generated:', video.videoId);
 
     // Download video as MP4
-    const mp4Url = `https://apiv2.zelstudio.com:800/api/v1/cdn/${video.videoId}.mp4`;
-    const mp4Response = await axios.get(mp4Url, {
-      responseType: 'arraybuffer',
-      headers: { 'Authorization': `Bearer zelai_pk_your_api_key_here` }
-    });
-    fs.writeFileSync('video.mp4', mp4Response.data);
+    const { buffer: mp4Buffer } = await client.downloadFromCDN(video.videoId, { format: 'mp4' });
+    fs.writeFileSync('video.mp4', mp4Buffer);
     console.log('Video saved to video.mp4');
 
     // Extract first frame as GIF
-    const gifUrl = `https://apiv2.zelstudio.com:800/api/v1/cdn/${video.videoId}.gif`;
-    const gifResponse = await axios.get(gifUrl, {
-      responseType: 'arraybuffer',
-      headers: { 'Authorization': `Bearer zelai_pk_your_api_key_here` }
-    });
-    fs.writeFileSync('thumbnail.gif', gifResponse.data);
+    const { buffer: gifBuffer } = await client.downloadFromCDN(video.videoId, { format: 'gif' });
+    fs.writeFileSync('thumbnail.gif', gifBuffer);
     console.log('GIF thumbnail saved to thumbnail.gif');
 
   } catch (error) {
@@ -759,7 +810,7 @@ generateVideoAndExtractFrame();
 ### Example 3: LLM with Memory and JSON Output
 
 ```typescript
-import { createClient } from 'zelai-sdk';
+import { createClient } from 'zelai-cloud-sdk';
 
 const client = createClient('zelai_pk_your_api_key_here');
 
@@ -805,7 +856,7 @@ chatWithMemory();
 ### Example 4: Batch Image Generation with Rate Limit Checking
 
 ```typescript
-import { createClient, STYLES } from 'zelai-sdk';
+import { createClient, STYLES } from 'zelai-cloud-sdk';
 
 const client = createClient('zelai_pk_your_api_key_here');
 
@@ -962,22 +1013,6 @@ type WatermarkPosition =
 
 ---
 
-## Rate Limits
-
-Default rate limits per API key:
-
-| Operation | 15-Min Window | Daily Limit |
-|-----------|--------------|-------------|
-| Image Generation | 150 requests | 1,000 requests |
-| Video Generation | 30 requests | 200 requests |
-| LLM | 300 requests | 1,000 requests |
-| LLM Tokens | 1,500,000 tokens | 5,000,000 tokens |
-| CDN | 1,500 requests | 10,000 requests |
-
-Custom rate limits can be configured per API key.
-
----
-
 ## Best Practices
 
 ### 1. Check Rate Limits Before Batch Operations
@@ -994,7 +1029,7 @@ if (remaining && remaining < batchSize) {
 ### 2. Use Appropriate Styles for Your Use Case
 
 ```typescript
-import { STYLES } from 'zelai-sdk';
+import { STYLES } from 'zelai-cloud-sdk';
 
 // For realistic photos
 STYLES.realistic.id
@@ -1154,38 +1189,6 @@ const client = createClient('zelai_pk_...', {
 
 ---
 
-## Migration Guide
-
-### Breaking Changes in v1.0.0
-
-**`imageUrl` and `videoUrl` have been removed from generation responses.**
-
-Previously, the API returned full CDN URLs directly in the response. For security and architectural reasons, these have been removed. You now receive only file IDs and must construct CDN URLs yourself.
-
-#### Before (Old Version)
-```typescript
-const result = await client.generateImage({ prompt: "..." });
-console.log(result.imageUrl);  // Full URL was provided
-// "https://cdn.zelstudio.com/file/xyz.jpg?watermark=..."
-```
-
-#### After (Current Version)
-```typescript
-const result = await client.generateImage({ prompt: "..." });
-// Result now contains only imageId (no imageUrl property)
-
-// Construct the CDN URL from the imageId
-const imageUrl = `https://apiv2.zelstudio.com:800/api/v1/cdn/${result.imageId}.jpg`;
-console.log(imageUrl);
-```
-
-**Why this change?**
-- **Security**: Prevents exposure of internal CDN structure and watermark IDs
-- **Flexibility**: Allows you to customize CDN parameters (size, watermark position, etc.)
-- **Future-proof**: CDN infrastructure can be updated without breaking client code
-
----
-
 ## Testing
 
 This SDK includes comprehensive test suites covering all API functionality:
@@ -1213,11 +1216,12 @@ npm run test:coverage
 | Full Suite (`test`) | 46 | ~12-13 min | Both suites combined |
 
 **Time breakdown by operation type:**
-- Image Generation: ~25-65s per test (AI processing)
-- Video Generation: ~90s per test (longest operation)
-- Image Upscale: ~70-80s per test
-- LLM Text Generation: ~1-10s per test (fast)
-- CDN Operations: <1s per test (instant)
+- Image Generation: ~28-37s per test (AI processing)
+- Image Editing: ~45-50s per test (includes resize)
+- Video Generation: ~100s per test (longest operation)
+- Image Upscale: ~80-85s per test
+- LLM Text Generation: ~2-11s per test (fast)
+- CDN/GIF Operations: <1s per test (instant)
 - Error Handling: <1s per test (validation only)
 
 ### Test Coverage

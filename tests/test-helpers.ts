@@ -6,6 +6,7 @@
 import axios from 'axios';
 import * as fs from 'fs';
 import * as path from 'path';
+import { ZelAIClient, CDNDownloadOptions } from '../src';
 
 const TMP_DIR = path.join(__dirname, 'tmp');
 
@@ -19,73 +20,58 @@ export function ensureTmpDir(): void {
 }
 
 /**
- * Download and save image from CDN
+ * Download and save image from CDN using client method
  */
 export async function saveImageFromCDN(
   imageId: string,
-  baseUrl: string,
+  client: ZelAIClient,
   filename: string,
-  apiKey?: string
+  options?: CDNDownloadOptions
 ): Promise<string> {
   ensureTmpDir();
 
-  const url = `${baseUrl}/api/v1/cdn/${imageId}.jpg`;
   const filepath = path.join(TMP_DIR, filename);
+  const format = options?.format || 'jpg';
 
-  console.log(`  📥 Downloading from: ${url}`);
-  console.log(`  🔑 Using API Key: ${apiKey ? 'Yes' : 'No'}`);
+  console.log(`  📥 Downloading image ${imageId} as ${format}`);
 
   try {
-    const response = await axios.get(url, {
-      responseType: 'arraybuffer',
-      timeout: 30000,
-      headers: apiKey ? {
-        'Authorization': `Bearer ${apiKey}`
-      } : {}
+    const { buffer, mimeType, size } = await client.downloadFromCDN(imageId, {
+      format: format as 'jpg' | 'png' | 'gif' | 'mp4',
+      ...options
     });
 
-    fs.writeFileSync(filepath, response.data);
-    console.log(`  ✓ Saved image to: tests/tmp/${filename}`);
+    fs.writeFileSync(filepath, new Uint8Array(buffer));
+    console.log(`  ✓ Saved image to: tests/tmp/${filename} (${formatBytes(size)}, ${mimeType})`);
     return filepath;
   } catch (error: any) {
     console.error(`  ✗ Failed to download image: ${error.message}`);
-    console.error(`  ✗ URL was: ${url}`);
     throw error;
   }
 }
 
 /**
- * Download and save video from CDN
+ * Download and save video from CDN using client method
  */
 export async function saveVideoFromCDN(
   videoId: string,
-  baseUrl: string,
-  filename: string,
-  apiKey?: string
+  client: ZelAIClient,
+  filename: string
 ): Promise<string> {
   ensureTmpDir();
 
-  const url = `${baseUrl}/api/v1/cdn/${videoId}.mp4`;
   const filepath = path.join(TMP_DIR, filename);
 
-  console.log(`  📥 Downloading from: ${url}`);
-  console.log(`  🔑 Using API Key: ${apiKey ? 'Yes' : 'No'}`);
+  console.log(`  📥 Downloading video ${videoId}`);
 
   try {
-    const response = await axios.get(url, {
-      responseType: 'arraybuffer',
-      timeout: 60000,  // Videos can be larger
-      headers: apiKey ? {
-        'Authorization': `Bearer ${apiKey}`
-      } : {}
-    });
+    const { buffer, mimeType, size } = await client.downloadFromCDN(videoId, { format: 'mp4' });
 
-    fs.writeFileSync(filepath, response.data);
-    console.log(`  ✓ Saved video to: tests/tmp/${filename}`);
+    fs.writeFileSync(filepath, new Uint8Array(buffer));
+    console.log(`  ✓ Saved video to: tests/tmp/${filename} (${formatBytes(size)}, ${mimeType})`);
     return filepath;
   } catch (error: any) {
     console.error(`  ✗ Failed to download video: ${error.message}`);
-    console.error(`  ✗ URL was: ${url}`);
     throw error;
   }
 }
@@ -96,33 +82,101 @@ export async function saveVideoFromCDN(
  */
 export async function saveGifFromCDN(
   videoId: string,
-  baseUrl: string,
+  client: ZelAIClient,
   filename: string,
-  apiKey?: string
+  options?: { width?: number; height?: number }
 ): Promise<string> {
   ensureTmpDir();
 
-  const url = `${baseUrl}/api/v1/cdn/${videoId}.gif`;
   const filepath = path.join(TMP_DIR, filename);
 
-  console.log(`  📥 Downloading GIF (first frame) from: ${url}`);
-  console.log(`  🔑 Using API Key: ${apiKey ? 'Yes' : 'No'}`);
+  console.log(`  📥 Downloading GIF (first frame) from video ${videoId}`);
+
+  try {
+    const { buffer, mimeType, size } = await client.downloadFromCDN(videoId, {
+      format: 'gif',
+      ...options
+    });
+
+    fs.writeFileSync(filepath, new Uint8Array(buffer));
+    console.log(`  ✓ Saved GIF (still frame) to: tests/tmp/${filename} (${formatBytes(size)}, ${mimeType})`);
+    return filepath;
+  } catch (error: any) {
+    console.error(`  ✗ Failed to download GIF: ${error.message}`);
+    throw error;
+  }
+}
+
+/**
+ * Extract and save a video frame at a specific timestamp from CDN
+ * Uses the seek option to extract frames at specific timestamps
+ *
+ * @param videoId - CDN ID of the video
+ * @param client - ZelAIClient instance
+ * @param seekMs - Timestamp in milliseconds to extract frame from
+ * @param filename - Output filename
+ * @param format - Output format ('jpg' or 'png')
+ */
+export async function saveFrameFromCDN(
+  videoId: string,
+  client: ZelAIClient,
+  seekMs: number,
+  filename: string,
+  format: 'jpg' | 'png' = 'jpg',
+  options?: { width?: number; height?: number; watermark?: string; watermarkPosition?: string }
+): Promise<string> {
+  ensureTmpDir();
+
+  const filepath = path.join(TMP_DIR, filename);
+
+  console.log(`  📥 Extracting frame at ${seekMs}ms from video ${videoId}`);
+
+  try {
+    const { buffer, mimeType, size } = await client.downloadFromCDN(videoId, {
+      format,
+      seek: seekMs,
+      ...options
+    } as CDNDownloadOptions);
+
+    fs.writeFileSync(filepath, new Uint8Array(buffer));
+    console.log(`  ✓ Saved frame to: tests/tmp/${filename} (${formatBytes(size)}, ${mimeType})`);
+    return filepath;
+  } catch (error: any) {
+    console.error(`  ✗ Failed to extract frame: ${error.message}`);
+    throw error;
+  }
+}
+
+/**
+ * Manual download using axios (for testing/documentation purposes)
+ * Shows how to download directly without the client method
+ */
+export async function saveImageManualAxios(
+  imageId: string,
+  baseUrl: string,
+  apiKey: string,
+  filename: string,
+  queryParams?: string
+): Promise<string> {
+  ensureTmpDir();
+
+  const url = `${baseUrl}/api/v1/cdn/${imageId}.jpg${queryParams ? '?' + queryParams : ''}`;
+  const filepath = path.join(TMP_DIR, filename);
+
+  console.log(`  📥 Manual axios download from: ${url}`);
 
   try {
     const response = await axios.get(url, {
       responseType: 'arraybuffer',
       timeout: 30000,
-      headers: apiKey ? {
-        'Authorization': `Bearer ${apiKey}`
-      } : {}
+      headers: { 'Authorization': `Bearer ${apiKey}` }
     });
 
     fs.writeFileSync(filepath, response.data);
-    console.log(`  ✓ Saved GIF (still frame) to: tests/tmp/${filename}`);
+    console.log(`  ✓ Saved image to: tests/tmp/${filename}`);
     return filepath;
   } catch (error: any) {
-    console.error(`  ✗ Failed to download GIF: ${error.message}`);
-    console.error(`  ✗ URL was: ${url}`);
+    console.error(`  ✗ Failed to download image: ${error.message}`);
     throw error;
   }
 }
@@ -172,55 +226,64 @@ export function logTestResult(success: boolean, details?: any): void {
  */
 export function getFileSize(filepath: string): string {
   const stats = fs.statSync(filepath);
-  const bytes = stats.size;
+  return formatBytes(stats.size);
+}
 
+/**
+ * Format bytes to human-readable string
+ */
+function formatBytes(bytes: number): string {
   if (bytes < 1024) return bytes + ' B';
   if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
   return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
 }
 
 /**
- * Extract and save a video frame at a specific timestamp from CDN
- * Uses the seek query parameter to extract frames at specific timestamps
+ * Display rate limits when a 429 error is encountered
+ * Fetches current usage from API and displays comparison with limits
  *
- * @param videoId - CDN ID of the video
- * @param baseUrl - API base URL
- * @param seekMs - Timestamp in milliseconds to extract frame from
- * @param filename - Output filename
- * @param extension - Output format ('jpg' or 'png')
- * @param apiKey - API key for authentication
+ * Note: Image/Video/LLM use slot-based limiting (concurrent operations),
+ * while CDN uses rate-based limiting (requests per window)
  */
-export async function saveFrameFromCDN(
-  videoId: string,
-  baseUrl: string,
-  seekMs: number,
-  filename: string,
-  extension: 'jpg' | 'png' = 'jpg',
-  apiKey?: string
-): Promise<string> {
-  ensureTmpDir();
+export async function displayRateLimitsOn429(
+  client: ZelAIClient,
+  error: Error
+): Promise<void> {
+  if (!error.message.includes('429') && !error.message.includes('CONCURRENT_LIMIT_EXCEEDED')) return;
 
-  const url = `${baseUrl}/api/v1/cdn/${videoId}.${extension}?seek=${seekMs}`;
-  const filepath = path.join(TMP_DIR, filename);
-
-  console.log(`  📥 Extracting frame at ${seekMs}ms from: ${url}`);
-  console.log(`  🔑 Using API Key: ${apiKey ? 'Yes' : 'No'}`);
+  console.log('\n⚠️  Rate/Concurrent limit hit. Fetching current usage...');
 
   try {
-    const response = await axios.get(url, {
-      responseType: 'arraybuffer',
-      timeout: 30000,
-      headers: apiKey ? {
-        'Authorization': `Bearer ${apiKey}`
-      } : {}
-    });
+    const settings = await client.getSettings();
 
-    fs.writeFileSync(filepath, response.data);
-    console.log(`  ✓ Saved frame to: tests/tmp/${filename}`);
-    return filepath;
-  } catch (error: any) {
-    console.error(`  ✗ Failed to extract frame: ${error.message}`);
-    console.error(`  ✗ URL was: ${url}`);
-    throw error;
+    if (settings.currentUsage) {
+      console.log('\n📊 Current Usage vs Limits:');
+      console.log('   (Image/Video/LLM: concurrent slots | CDN: rate-based)');
+
+      // Image (slot-based - concurrent operations)
+      const img = settings.currentUsage.image;
+      const imgLim = settings.rateLimits.image;
+      console.log(`  Image:  ${img.current.requestsPer15Min}/${imgLim.requestsPer15Min} concurrent slots`);
+
+      // Video (slot-based - concurrent operations)
+      const vid = settings.currentUsage.video;
+      const vidLim = settings.rateLimits.video;
+      console.log(`  Video:  ${vid.current.requestsPer15Min}/${vidLim.requestsPer15Min} concurrent slots`);
+
+      // LLM (slot-based - concurrent operations)
+      const llm = settings.currentUsage.llm;
+      const llmLim = settings.rateLimits.llm;
+      console.log(`  LLM:    ${llm.current.requestsPer15Min}/${llmLim.requestsPer15Min} concurrent slots | ${llm.current.tokensPerDay}/${llmLim.tokensPerDay} tokens/day`);
+
+      // CDN (rate-based - traditional window counting)
+      const cdn = settings.currentUsage.cdn;
+      const cdnLim = settings.rateLimits.cdn;
+      console.log(`  CDN:    ${cdn.current.requestsPer15Min}/${cdnLim.requestsPer15Min} (15min) | ${cdn.current.requestsPerDay}/${cdnLim.requestsPerDay} (daily)`);
+
+      // Reset times (only relevant for CDN rate-based)
+      console.log(`\n  CDN reset at: ${new Date(cdn.resetAt.window15Min).toLocaleTimeString()}`);
+    }
+  } catch (e: any) {
+    console.log(`  Could not fetch rate limit info: ${e.message}`);
   }
 }
