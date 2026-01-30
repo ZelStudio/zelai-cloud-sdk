@@ -1,6 +1,6 @@
 /**
  * Constants and Enums for ZelAI SDK
- * @version 1.7.0
+ * @version 1.8.0
  */
 
 import { StylePreset, FormatPreset } from './types';
@@ -224,7 +224,7 @@ export const VALID_FORMAT_IDS = Object.keys(FORMATS) as ReadonlyArray<keyof type
 /**
  * Default API base URL
  */
-export const DEFAULT_BASE_URL = 'https://api.zelstudio.com';
+export const DEFAULT_BASE_URL = 'https://api.zelstudio.com:800';
 
 /**
  * Default request timeout (milliseconds)

@@ -1,7 +1,7 @@
 /**
  * ZelAI SDK Client
  * Official TypeScript/JavaScript client for ZelAI API
- * @version 1.7.0
+ * @version 1.8.0
  */
 
 import WebSocket from 'ws';
@@ -256,7 +256,7 @@ export class ZelAIClient {
    * Generate a video from an image
    */
   async generateVideo(options: VideoGenerationOptions): Promise<VideoGenerationResult> {
-    this.log('Generating video', { imageId: options.imageId, duration: options.duration });
+    this.log('Generating video', { imageId: options.imageId, prompt: options.prompt, duration: options.duration });
 
     if (!options.imageId) {
       throw new Error('imageId is required for video generation');
@@ -265,6 +265,7 @@ export class ZelAIClient {
     try {
       const response = await this.axios.post('/api/v1/generation/video', {
         imageId: options.imageId,
+        prompt: options.prompt,
         duration: options.duration ?? 5,
         fps: options.fps ?? 16
       });
@@ -966,6 +967,7 @@ export class ZelAIClient {
    * ```typescript
    * const result = await client.wsGenerateVideo({
    *   imageId: 'source-image-id',
+   *   prompt: 'the scene view (the camera) pans left, smooth motion',
    *   duration: 5,
    *   fps: 16
    * });

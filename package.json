@@ -1,6 +1,6 @@
 {
   "name": "zelai-cloud-sdk",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "description": "Official ZelAI SDK - Multimodal AI for autonomous image/video generation, vision analysis and agentic LLM workflows",
   "keywords": [
     "zelai",
