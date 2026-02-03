@@ -1,6 +1,6 @@
 ---
 name: ZelAI SDK
-version: 1.10.0
+version: 1.11.0
 description: Official SDK for ZelStudio.com Cloud AI Generation API - Image, Video, and LLM generation
 homepage: https://zelstudio.com
 api_base_url: https://api.zelstudio.com:800
@@ -205,4 +205,4 @@ See [LLM Text Generation](./skills/llm-text.md) for streaming details.
 
 ---
 
-**Version:** 1.10.0 | [Documentation](https://github.com/ZelStudio/zelai-cloud-sdk) | [npm](https://www.npmjs.com/package/zelai-cloud-sdk)
+**Version:** 1.11.0 | [Documentation](https://github.com/ZelStudio/zelai-cloud-sdk) | [npm](https://www.npmjs.com/package/zelai-cloud-sdk)

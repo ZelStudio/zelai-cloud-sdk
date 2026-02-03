@@ -1,7 +1,7 @@
 ---
 name: ZelAI OpenAI Compatible API
 capability: openai_compatible
-version: 1.10.0
+version: 1.11.0
 api_base_url: https://api.zelstudio.com:800/v1
 openai_compatible: true
 ---

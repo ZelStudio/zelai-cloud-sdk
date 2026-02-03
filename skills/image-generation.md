@@ -1,7 +1,7 @@
 ---
 name: ZelAI Image Generation
 capability: image_generation
-version: 1.10.0
+version: 1.11.0
 api_base_url: https://api.zelstudio.com:800
 ---
 
