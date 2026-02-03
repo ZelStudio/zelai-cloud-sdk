@@ -1,6 +1,6 @@
 /**
  * ZelAI SDK - Official TypeScript/JavaScript SDK
- * @version 1.8.0
+ * @version 1.10.0
  * @packageDocumentation
  */
 
