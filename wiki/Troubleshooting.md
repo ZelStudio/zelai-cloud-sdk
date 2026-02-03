@@ -450,7 +450,7 @@ For enterprise customers:
 - Higher rate limits and dedicated infrastructure
 - Priority support and SLA guarantees
 
-Contact [enterprise@zelstudio.com](mailto:enterprise@zelstudio.com) for more information.
+Contact [support@zelstudio.com](mailto:support@zelstudio.com) for more information.
 
 ---
 

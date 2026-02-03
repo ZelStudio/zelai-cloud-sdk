@@ -36,13 +36,13 @@ To use this SDK, you need an API key.
 
 ### Request Access
 
-1. Fill out the [API Access Request Form](https://forms.gle/TdQ8Wu3zpegvAwVg9)
+1. Fill out the [API Access Request Form](https://forms.zelstudio.com/api-access)
 2. We'll review your request within 24-48 hours
 3. Once approved, you'll receive your API key via email
 
 ### Contact
 
-- Twitter/X: [@ZelAICommunity](https://x.com/ZelAICommunity)
+- Twitter/X: [@ZelStudio](https://x.com/ZelStudio)
 
 
 ---
