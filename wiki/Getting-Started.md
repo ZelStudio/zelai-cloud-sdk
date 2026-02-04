@@ -5,7 +5,7 @@ This guide will help you install the SDK, obtain an API key, and make your first
 ## Table of Contents
 
 - [Installation](#installation)
-- [Getting an API Key](#getting-an-api-key)
+- [How to Get an API Key](#how-to-get-an-api-key)
 - [Initialization](#initialization)
 - [Quick Start](#quick-start)
 - [Client Options](#client-options)
@@ -30,20 +30,28 @@ yarn add zelai-cloud-sdk
 
 ---
 
-## Getting an API Key
+## How to Get an API Key
 
 To use this SDK, you need an API key.
 
-### Request Access
+**Email Request**
 
-1. Fill out the [API Access Request Form](https://forms.zelstudio.com/api-access)
-2. We'll review your request within 24-48 hours
-3. Once approved, you'll receive your API key via email
+Send to: [support@zelstudio.com](mailto:support@zelstudio.com)
+Subject: `ZelStudio.com SDK API Access Request Form`
+
+Required information:
+- Full Name
+- Email Address (for API key delivery)
+- Company/Organization (optional)
+- Project Name
+- Project Description (what you're building and how you'll use the API)
+- Expected Monthly Usage: Testing / Low (<1k) / Medium (1k-10k) / High (10k+)
+
+API keys are reviewed within 24-48 hours and sent via email once approved.
 
 ### Contact
 
-- Twitter/X: [@ZelStudio](https://x.com/ZelStudio)
-
+- Email: [support@zelstudio.com](mailto:support@zelstudio.com)
 
 ---
 

@@ -111,12 +111,9 @@ Authorization: Bearer zelai_pk_your_api_key_here
 
 If the user doesn't have an API key, direct them to:
 
-**Option 1: Online Form**
-https://forms.zelstudio.com/api-access
-
-**Option 2: Email Request**
+**Email Request**
 Send to: support@zelstudio.com
-Subject: `AI Agent - ZelStudio.com API Access Request Form`
+Subject: `AI Agent - ZelStudio.com SDK API Access Request Form`
 
 Required information:
 - Full Name
