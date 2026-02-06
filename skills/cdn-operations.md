@@ -1,7 +1,7 @@
 ---
 name: ZelAI CDN Operations
 capability: cdn_operations
-version: 1.11.0
+version: 1.12.0
 api_base_url: https://api.zelstudio.com:800
 ---
 

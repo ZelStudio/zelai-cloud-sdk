@@ -1,7 +1,7 @@
 ---
 name: ZelAI Video Generation
 capability: video_generation
-version: 1.11.0
+version: 1.12.0
 api_base_url: https://api.zelstudio.com:800
 recommended_settings:
   duration: 6.5
